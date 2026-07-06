@@ -311,7 +311,7 @@ function showRedactionPanel(originalText, redactions, fileName) {
 
     for (const r of sorted) {
       if (r.start > cursor) {
-        html += esc(originalText.substring(cursor, r.start));
+        html += `<span data-start="${cursor}">${esc(originalText.substring(cursor, r.start))}</span>`;
       }
 
       const confStr = r.confidence ? ` [${Math.round(r.confidence * 100)}% Confidence]` : '';
@@ -327,7 +327,7 @@ function showRedactionPanel(originalText, redactions, fileName) {
     }
 
     if (cursor < originalText.length) {
-      html += esc(originalText.substring(cursor));
+      html += `<span data-start="${cursor}">${esc(originalText.substring(cursor))}</span>`;
     }
 
     previewEl.innerHTML = html;
@@ -408,35 +408,45 @@ function showRedactionPanel(originalText, redactions, fileName) {
           e.preventDefault();
           e.stopPropagation();
           
-          let startIndex = originalText.indexOf(text);
-          let matchFound = false;
+          const rawText = selection.toString();
+          const trimOffset = rawText.indexOf(text);
+          let absoluteStart = -1;
+
+          let startContainer = range.startContainer;
+          let span = startContainer.nodeType === 3 ? startContainer.parentElement : startContainer;
           
-          while (startIndex !== -1) {
-            const isCovered = redactions.some(r => startIndex >= r.start && (startIndex + text.length) <= r.end);
+          if (span && span.hasAttribute('data-start')) {
+             absoluteStart = parseInt(span.getAttribute('data-start'), 10) + range.startOffset + trimOffset;
+          } else if (span && span.classList.contains('redactai-kept')) {
+             const r = redactions.find(x => x.id === span.dataset.id);
+             if (r) absoluteStart = r.start + range.startOffset + trimOffset;
+          }
+
+          if (absoluteStart === -1) {
+             absoluteStart = originalText.indexOf(text); 
+          }
+          
+          if (absoluteStart !== -1) {
+            const isCovered = redactions.some(r => absoluteStart >= r.start && (absoluteStart + text.length) <= r.end);
             
             if (!isCovered) {
               redactions.push({
-                id: `manual-${startIndex}-${startIndex+text.length}-${Math.random().toString(36).substring(2)}`,
-                original_text: text,
+                id: `manual-${absoluteStart}-${absoluteStart+text.length}-${Math.random().toString(36).substring(2)}`,
+                original_text: originalText.substring(absoluteStart, absoluteStart+text.length),
                 pii_type: 'MANUAL',
                 confidence: 1.0,
-                start: startIndex,
-                end: startIndex + text.length,
+                start: absoluteStart,
+                end: absoluteStart + text.length,
                 is_redacted: true,
                 icon: '✏️',
-                color: 'rgba(71, 85, 105, 0.35)'
+                color: 'rgba(0, 240, 255, 0.4)'
               });
-              matchFound = true;
-              break;
+              
+              selection.removeAllRanges();
+              manualPopup.remove();
+              manualPopup = null;
+              renderAll();
             }
-            startIndex = originalText.indexOf(text, startIndex + 1);
-          }
-          
-          if (matchFound) {
-            selection.removeAllRanges();
-            manualPopup.remove();
-            manualPopup = null;
-            renderAll();
           }
         };
         
