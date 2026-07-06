@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e2e8f0;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .header .shield { font-size: 28px; }
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header .version {
+      font-size: 10px;
+      color: #64748b;
+      margin-left: auto;
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .description {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .feature .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .feature .text { font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+    .feature .text strong { color: #a5b4fc; }
+    .footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="shield">🛡️</span>
+    <h1>RedactAI</h1>
+    <span class="version">v1.0.0</span>
+  </div>
+
+  <p class="description">
+    Automatically scans documents for PII before you share them with AI chatbots.
+    Upload a PDF or text file on any supported chat site to get started.
+  </p>
+
+  <div class="feature">
+    <span class="icon">🔍</span>
+    <div class="text"><strong>Auto-Detect</strong> — Emails, phones, SSNs, addresses, credit cards, and more.</div>
+  </div>
+
+  <div class="feature">
+    <span class="icon">✏️</span>
+    <div class="text"><strong>Manual Control</strong> — Toggle individual redactions on/off before pasting.</div>
+  </div>
+
+  <div class="feature">
+    <span class="icon">⚡</span>
+    <div class="text"><strong>Instant Insert</strong> — Paste sanitized text directly into the AI chat box.</div>
+  </div>
+
+  <div class="footer">
+    Works on ChatGPT, Claude, Gemini, Copilot, DeepSeek, Grok & more.
+  </div>
+</body>
+</html>
