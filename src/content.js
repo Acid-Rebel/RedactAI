@@ -202,6 +202,7 @@ function showRedactionPanel(originalText, redactions, fileName) {
         <button class="redactai-btn redactai-btn-ghost" id="redactai-export-safe" title="Export Safe Document">⬇️ Safe (.txt)</button>
         <button class="redactai-btn redactai-btn-ghost" id="redactai-export-safe-pdf" title="Export Safe Document as PDF">⬇️ Safe (.pdf)</button>
         <button class="redactai-btn redactai-btn-secondary" id="redactai-copy">📋 Copy</button>
+        <button class="redactai-btn redactai-btn-secondary" id="redactai-upload-txt">⬆️ Upload .txt</button>
         <button class="redactai-btn redactai-btn-primary" id="redactai-insert">✏️ Paste to Chat</button>
       </div>
     </div>
@@ -472,6 +473,14 @@ function showRedactionPanel(originalText, redactions, fileName) {
     });
   };
 
+  root.querySelector('#redactai-upload-txt').onclick = () => {
+    const safe = buildSafeText(originalText, redactions);
+    const fn = fileName.replace(/\.[^.]+$/, '') + '_redacted.txt';
+    uploadTxtToChat(safe, fn);
+    flashBtn(root.querySelector('#redactai-upload-txt'), '✅ Uploaded!', '⬆️ Upload .txt');
+    setTimeout(removePanel, 1500);
+  };
+
   root.querySelector('#redactai-insert').onclick = () => {
     const safe = buildSafeText(originalText, redactions);
     insertIntoChat(safe);
@@ -585,6 +594,25 @@ function insertIntoChat(text) {
   } else {
     document.execCommand('insertText', false, text);
     input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+function uploadTxtToChat(text, filename) {
+  const file = new File([text], filename, { type: 'text/plain' });
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+
+  // Simulate a drag-and-drop file upload on the page
+  const events = ['dragenter', 'dragover', 'drop'];
+  const target = document.body;
+
+  for (const type of events) {
+    const ev = new DragEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer
+    });
+    target.dispatchEvent(ev);
   }
 }
 
